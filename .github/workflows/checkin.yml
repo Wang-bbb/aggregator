@@ -1,7 +1,6 @@
 name: Checkin
 on:
-  schedule:
-    - cron: "45 02 * * *"
+  # Manual only; scheduled check-ins are disabled.
   workflow_dispatch:
 
 jobs:
