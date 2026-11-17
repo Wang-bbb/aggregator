@@ -7,6 +7,9 @@
     "enable": true,
     "max_fails": 5,
     "include_nodes": true,
+    "task": {
+      "push_to": ["free"]
+    },
     "telegram": {
       "enable": true,
       "pages": 1,
