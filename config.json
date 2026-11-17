@@ -1,0 +1,46 @@
+{
+  "sites": [],
+  "update": {
+    "enable": false
+  },
+  "crawl": {
+    "enable": true,
+    "max_fails": 5,
+    "include_nodes": true,
+    "telegram": {
+      "enable": true,
+      "pages": 1,
+      "channels": {
+        "abc_vpn_configs": {
+          "push_to": ["free"]
+        },
+        "OnlineVpnConfigs": {
+          "push_to": ["free"]
+        }
+      }
+    },
+    "google": {"enable": false},
+    "yandex": {"enable": false},
+    "github": {"enable": false},
+    "twitter": {"enable": false}
+  },
+  "groups": {
+    "free": {
+      "emoji": true,
+      "list_only": true,
+      "targets": {
+        "clash": "clash"
+      }
+    }
+  },
+  "storage": {
+    "engine": "gist",
+    "items": {
+      "clash": {
+        "username": "Wang-bbb",
+        "gist_id": "ab15c2fb0a98f085d555a2769d2515ec",
+        "filename": "clash.yaml"
+      }
+    }
+  }
+}
