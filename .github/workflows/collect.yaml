@@ -1,4 +1,11 @@
 name: Collect
 on:
-  # Intentionally manual-only; do not run airport registration workflows.
+  # Manual only; collection is intentionally disabled for this read-only setup.
   workflow_dispatch:
+
+jobs:
+  disabled:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain
+        run: echo "Collect workflow is intentionally disabled."
