@@ -60,25 +60,17 @@ def execute(task_conf: TaskConfig) -> list[dict[str, object]]:
 
     logger.info(f"start fetch proxy: name=[{task_conf.name}]\tid=[{task_conf.index}]\tdomain=[{obj.ref}]")
 
-    # 套餐续期
+    # Safety: this deployment is read-only. Never renew plans or register
+    # accounts automatically. Only parse explicitly supplied subscription URLs
+    # or proxy nodes.
     if task_conf.renew:
-        sub_url = renewal.add_traffic_flow(
-            domain=obj.ref,
-            job=task_conf.renew,
-            jsonify=obj.api_prefix == ANOTHER_API_PREFIX,
-        )
-        if sub_url and not obj.registed:
-            obj.registed = True
-            obj.nodes.subscribe = sub_url
+        logger.warning(f"[Safety] skip automatic renewal for {task_conf.name}")
+        return []
 
     cookie, authorization = "", ""
     if task_conf.nodes.empty() and task_conf.domain:
-        cookie, authorization = obj.get_subscribe(
-            retry=task_conf.retry,
-            allow_gmail_alias=task_conf.allow_gmail_alias,
-            skip_captcha=task_conf.skip_captcha,
-            invite_code=task_conf.invite_code,
-        )
+        logger.warning(f"[Safety] skip automatic registration for {task_conf.name}")
+        return []
 
     proxies = obj.parse(
         cookie=cookie,
