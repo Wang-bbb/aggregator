@@ -1,7 +1,7 @@
 name: Delete
 on:
-  schedule:
-    - cron: "0 0 * * SUN"
+  # Manual only; scheduled workflow-run cleanup is disabled.
+  workflow_dispatch:
 
 jobs:
   del_runs:
