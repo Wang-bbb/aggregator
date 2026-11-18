@@ -174,8 +174,15 @@ def check_alive_proxies(
     process = subprocess.Popen([binpath, "-d", workspace, "-f", os.path.join(workspace, filename)])
     logger.info(f"clash start success, begin check proxies, group: {group}\tcount: {len(checks)}")
     time.sleep(random.randint(5, 8))
+    # Conservative quality gate: cap the accepted latency even when an older
+    # SUBSCRIBE_CONF secret still specifies the upstream 5000ms default.
+    # Strict mode also checks an additional download endpoint, reducing
+    # false positives from nodes that only answer a single lightweight probe.
+    quality_delay = min(max(int(delay), 1), 1800)
     params = [
-        [item, clash.EXTERNAL_CONTROLLER, timeout, test_url, delay, False] for item in checks if isinstance(item, dict)
+        [item, clash.EXTERNAL_CONTROLLER, timeout, test_url, quality_delay, True]
+        for item in checks
+        if isinstance(item, dict)
     ]
     masks = utils.multi_thread_run(func=clash.check, tasks=params, num_threads=num_threads, show_progress=display)
     try:
