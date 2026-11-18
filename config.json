@@ -24,7 +24,7 @@
     },
     "google": {"enable": false},
     "yandex": {"enable": false},
-    "github": {"enable": false},
+    "github": {"enable": true, "pages": 1, "push_to": ["free"]},
     "twitter": {"enable": false}
   },
   "groups": {
