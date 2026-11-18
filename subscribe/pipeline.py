@@ -191,9 +191,27 @@ def check_alive_proxies(
         logger.error(f"terminate clash process error, group: {group}")
 
     availables = [checks[i] for i in range(len(checks)) if masks[i]]
+    speed_passed = []
+    for item in availables:
+        passed, speed = clash.check_download_speed(
+            proxy=item,
+            api_url=clash.EXTERNAL_CONTROLLER,
+        )
+        speed_kib = speed / 1024
+        logger.info(
+            f"[SpeedCheck] proxy: {item.get('name', '')}, "
+            f"download: {speed_kib:.1f} KiB/s, passed: {passed}"
+        )
+        if passed:
+            speed_passed.append(item)
+
+    availables = speed_passed
     nochecks.extend(availables)
     logger.info(
-        f"proxies check finished, total: {len(checks)}, alive: {len(availables)}, dead: {len(checks) - len(availables)}"
+        f"proxies check finished, total: {len(checks)}, "
+        f"latency_alive: {sum(1 for mask in masks if mask)}, "
+        f"speed_passed: {len(availables)}, "
+        f"rejected: {len(checks) - len(availables)}"
     )
     return nochecks
 
