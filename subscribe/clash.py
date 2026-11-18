@@ -171,6 +171,68 @@ def check(
         return False
 
 
+
+DOWNLOAD_TEST_URL = "https://speed.cloudflare.com/__down?bytes=1048576"
+DOWNLOAD_TEST_BYTES = 1024 * 1024
+MIN_DOWNLOAD_SPEED = 128 * 1024
+
+
+def check_download_speed(
+    proxy: dict[str, object],
+    api_url: str,
+    timeout: int = 15,
+    min_speed: int = MIN_DOWNLOAD_SPEED,
+) -> tuple[bool, float]:
+    """Measure a real 1 MiB download through one selected proxy."""
+    name = utils.trim(str(proxy.get("name", "")))
+    if not name:
+        return False, 0.0
+
+    try:
+        # The selector group contains every candidate proxy. Pin one node so
+        # the local mixed port sends the download through that exact node.
+        selector = urllib.parse.quote("🌐 Proxy", safe="")
+        select_url = f"http://{api_url}/proxies/{selector}"
+        payload = json.dumps({"name": name}).encode("utf-8")
+        request = urllib.request.Request(
+            select_url,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="PUT",
+        )
+        with urllib.request.urlopen(request, timeout=5) as response:
+            if response.getcode() not in (200, 204):
+                return False, 0.0
+
+        time.sleep(0.25)
+        proxy_url = "http://127.0.0.1:7890"
+        opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url})
+        )
+        download_request = urllib.request.Request(
+            DOWNLOAD_TEST_URL,
+            headers={"User-Agent": "Aggregator-Quality-Check/1.0", "Accept-Encoding": "identity"},
+        )
+        started = time.monotonic()
+        total = 0
+        with opener.open(download_request, timeout=timeout) as response:
+            if response.getcode() != 200:
+                return False, 0.0
+            while total < DOWNLOAD_TEST_BYTES:
+                chunk = response.read(min(64 * 1024, DOWNLOAD_TEST_BYTES - total))
+                if not chunk:
+                    break
+                total += len(chunk)
+
+        elapsed = max(time.monotonic() - started, 0.001)
+        speed = total / elapsed
+        passed = total >= int(DOWNLOAD_TEST_BYTES * 0.95) and speed >= min_speed
+        return passed, speed
+    except Exception as e:
+        logger.debug(f"download speed check failed, proxy: {name}, message: {str(e)}")
+        return False, 0.0
+
+
 def is_mihomo() -> bool:
     base = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     clash_bin, _ = executable.which_bin()
