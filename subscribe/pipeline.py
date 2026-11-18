@@ -185,11 +185,6 @@ def check_alive_proxies(
         if isinstance(item, dict)
     ]
     masks = utils.multi_thread_run(func=clash.check, tasks=params, num_threads=num_threads, show_progress=display)
-    try:
-        process.terminate()
-    except Exception:
-        logger.error(f"terminate clash process error, group: {group}")
-
     availables = [checks[i] for i in range(len(checks)) if masks[i]]
     speed_passed = []
     for item in availables:
@@ -206,6 +201,11 @@ def check_alive_proxies(
             speed_passed.append(item)
 
     availables = speed_passed
+    try:
+        process.terminate()
+    except Exception:
+        logger.error(f"terminate clash process error, group: {group}")
+
     nochecks.extend(availables)
     logger.info(
         f"proxies check finished, total: {len(checks)}, "
