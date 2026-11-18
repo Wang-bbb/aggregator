@@ -176,7 +176,7 @@ def check(
 
 DOWNLOAD_TEST_URL = "https://speed.cloudflare.com/__down?bytes=1048576"
 DOWNLOAD_TEST_BYTES = 1024 * 1024
-MIN_DOWNLOAD_SPEED = 128 * 1024
+MIN_DOWNLOAD_SPEED = 256 * 1024
 
 
 def check_download_speed(
