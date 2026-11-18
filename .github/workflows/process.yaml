@@ -7,6 +7,7 @@ env:
   TZ: Asia/Shanghai
   SUBSCRIBE_CONF: ${{ secrets.SUBSCRIBE_CONF }}
   PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
   SKIP_ALIVE_CHECK: ${{ vars.SKIP_ALIVE_CHECK }}
   SKIP_REMARK: ${{ vars.SKIP_REMARK }}
   WORKFLOW_MODE: ${{ vars.WORKFLOW_MODE }}
